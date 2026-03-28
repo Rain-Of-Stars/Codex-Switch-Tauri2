@@ -65,6 +65,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
       - name: Resolve release metadata
         id: release_meta
         shell: bash
@@ -118,17 +123,6 @@ jobs:
       - name: Run TypeScript checks
         run: npm run typecheck
 
-      - name: Build frontend dist
-        run: npm run build:dist
-
-      - name: Upload frontend dist artifact
-        uses: actions/upload-artifact@v6
-        with:
-          compression-level: 0
-          name: codex-switch-frontend-dist
-          if-no-files-found: error
-          path: dist
-
   verify-rust:
     name: Verify Rust Backend
     runs-on: windows-latest
@@ -155,6 +149,9 @@ jobs:
 
       - name: Run Rust tests
         run: npm run test:rust
+
+      - name: Run Rust checks
+        run: npm run check:rust
 
   build-windows:
     name: Build Windows Installer
@@ -185,18 +182,13 @@ jobs:
           workspaces: |
             src-tauri -> target
 
-      - name: Download frontend dist artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: codex-switch-frontend-dist
-          path: .
-
       - name: Install frontend dependencies
         run: npm ci --prefer-offline --no-audit --fund=false
 
+      - name: Clean build artifacts
+        run: npm run clean:artifacts
+
       - name: Build Windows bundles
-        env:
-          SKIP_TAURI_FRONTEND_BUILD: "1"
         run: npm run build:windows
 
       - name: Upload Windows bundle artifacts
