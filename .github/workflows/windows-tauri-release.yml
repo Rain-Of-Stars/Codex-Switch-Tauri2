@@ -155,9 +155,6 @@ jobs:
 
   build-windows:
     name: Build Windows Installer
-    needs:
-      - verify-frontend
-      - verify-rust
     runs-on: windows-latest
     timeout-minutes: 45
 
@@ -204,6 +201,8 @@ jobs:
     name: Publish GitHub Release
     needs:
       - resolve-release-meta
+      - verify-frontend
+      - verify-rust
       - build-windows
     if: needs.resolve-release-meta.outputs.release_requested == 'true'
     runs-on: ubuntu-latest
