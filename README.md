@@ -4,7 +4,7 @@
 
 **Windows 桌面端 Codex 配置管理与一键切换工具**
 
-[![Version](https://img.shields.io/badge/版本-v1.3.0-blue)](#)
+[![Version](https://img.shields.io/badge/版本-v1.4.0-blue)](#)
 [![Platform](https://img.shields.io/badge/平台-Windows%20x64-informational)](#)
 [![License](https://img.shields.io/badge/许可证-MIT-green)](LICENSE)
 [![Tech](https://img.shields.io/badge/技术栈-Tauri%202%20%2B%20React%20%2B%20Rust-orange)](#技术栈)
@@ -317,7 +317,7 @@ npm run verify
 推送 `v*` 标签时：
 
 - 工作流会在上述构建全部通过后创建或更新对应的 GitHub Release，并上传同一份 NSIS 安装包作为附件。
-- 标签名必须与 `package.json` 版本一致，例如 `package.json` 为 `1.3.0` 时，需要推送 `v1.3.0`。
+- 标签名必须与 `package.json` 版本一致，例如 `package.json` 为 `1.4.0` 时，需要推送 `v1.4.0`。
 
 工作流文件：`.github/workflows/windows-tauri-release.yml`
 
