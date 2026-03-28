@@ -1,0 +1,9 @@
+{
+  "identifier": "main-capability",
+  "description": "主窗口默认能力，仅开放本地 IPC。",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:webview:deny-internal-toggle-devtools"
+  ]
+}
