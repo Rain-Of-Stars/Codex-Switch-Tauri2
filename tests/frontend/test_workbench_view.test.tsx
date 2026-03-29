@@ -57,9 +57,9 @@ describe("WorkbenchView", () => {
     const lastSwitchContent = screen.getByTestId("workbench-last-switch-content");
 
     expect(layout.className).toContain("xl:overflow-hidden");
-    expect(quickSwitchContent.className).toContain("xl:overflow-y-auto");
+    expect(quickSwitchContent.className).toContain("overflow-y-auto");       
     expect(quickSwitchContent.className).toContain("xl:[scrollbar-gutter:stable]");
-    expect(lastSwitchContent.className).toContain("xl:overflow-y-auto");
+    expect(lastSwitchContent.className).toContain("overflow-y-auto");        
     expect(lastSwitchContent.className).toContain("xl:[scrollbar-gutter:stable]");
   });
 

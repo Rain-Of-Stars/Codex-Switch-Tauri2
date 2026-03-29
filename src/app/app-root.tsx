@@ -8,6 +8,7 @@ import { useBootstrap } from "@/hooks/use-bootstrap";
 import { useAppShellStore, type AppRoute } from "@/store/app-shell-store";
 import { Sidebar } from "@/components/layout/sidebar";
 import { AppHeader } from "@/components/layout/app-header";
+import { WindowTitlebar } from "@/components/layout/window-titlebar";
 
 const WorkbenchPage = lazy(() =>
   import("@/pages/workbench-page").then((module) => ({ default: module.WorkbenchPage })),
@@ -53,9 +54,7 @@ function Shell() {
       return <BootstrapErrorState errorMessage={bootstrapError} onRetry={retryBootstrap} />;
     }
 
-    return (
-      <CenteredLoader message="正在加载 Tauri 控制台…" />
-    );
+    return <CenteredLoader message="正在加载 Tauri 控制台…" />;
   }
 
   const route = (location.pathname || "/") as AppRoute;
@@ -76,42 +75,55 @@ function Shell() {
     }
   }
 
+  const handleOpenDataDirectory = () => {
+    void appApi.openDataDirectory().catch((error) => {
+      toast.error(error instanceof Error ? error.message : "打开目录失败");
+    });
+  };
+
   return (
-    <div className="flex h-full flex-col gap-3 overflow-hidden p-3 sm:gap-4 sm:p-4 lg:flex-row">
-      <Sidebar
-        collapsed={collapsed}
-        onRouteChange={(nextRoute) => navigate(nextRoute)}
-        onToggle={() => {
-          void updateSidebarCollapsed(!collapsed);
-        }}
+    <div className="grid h-full min-h-0 grid-rows-[var(--titlebar-height)_minmax(0,1fr)] bg-transparent text-foreground">
+      <WindowTitlebar
+        bootstrap={currentBootstrap}
         route={route}
       />
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 sm:gap-4">
-        <AppHeader
-          bootstrap={currentBootstrap}
-          onOpenDataDirectory={() => {
-            void appApi.openDataDirectory().catch((error) => {
-              toast.error(error instanceof Error ? error.message : "打开目录失败");
-            });
-          }}
-          onRouteChange={(nextRoute) => navigate(nextRoute)}
-          route={route}
-        />
+      <div className="grid min-h-0 grid-cols-[auto_minmax(0,1fr)] gap-4 overflow-hidden p-4">
+        <div className="overflow-hidden rounded-xl shadow-sm bg-white border border-slate-200 shadow-slate-200/50">
+          <Sidebar
+            collapsed={collapsed}
+            onRouteChange={(nextRoute) => navigate(nextRoute)}
+            onToggle={() => {
+              void updateSidebarCollapsed(!collapsed);
+            }}
+            route={route}
+          />
+        </div>
 
-        <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-[28px] border border-border bg-white/55 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.04)] sm:p-4 lg:p-5">
-          <Suspense fallback={<CenteredLoader message="正在加载页面…" />}>
-            <Routes>
-              <Route element={<WorkbenchPage />} path="/" />
-              <Route element={<ProfilesPage />} path="/profiles" />
-              <Route element={<SwitchPage />} path="/switch" />
-              <Route element={<TemplatesPage />} path="/templates" />
-              <Route element={<BackupsPage />} path="/backups" />
-              <Route element={<SettingsPage />} path="/settings" />
-              <Route element={<LogsPage />} path="/logs" />
-            </Routes>
-          </Suspense>
-        </main>
+        <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden">
+          <div className="rounded-xl border border-slate-200 shadow-sm shadow-slate-200/50 overflow-hidden bg-white">
+            <AppHeader
+              bootstrap={currentBootstrap}
+              onOpenDataDirectory={handleOpenDataDirectory}
+              onRouteChange={(nextRoute) => navigate(nextRoute)}
+              route={route}
+            />
+          </div>
+
+          <main className="min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/50">
+            <Suspense fallback={<CenteredLoader message="正在加载页面…" />}>
+              <Routes>
+                <Route element={<WorkbenchPage />} path="/" />
+                <Route element={<ProfilesPage />} path="/profiles" />
+                <Route element={<SwitchPage />} path="/switch" />
+                <Route element={<TemplatesPage />} path="/templates" />
+                <Route element={<BackupsPage />} path="/backups" />
+                <Route element={<SettingsPage />} path="/settings" />
+                <Route element={<LogsPage />} path="/logs" />
+              </Routes>
+            </Suspense>
+          </main>
+        </div>
       </div>
     </div>
   );
@@ -119,10 +131,10 @@ function Shell() {
 
 function CenteredLoader({ message }: { message: string }) {
   return (
-    <div className="grid h-full place-items-center">
-      <div className="flex items-center gap-3 rounded-2xl border border-border bg-white/75 px-5 py-4 shadow-lg">
+    <div className="grid h-full place-items-center bg-transparent px-6">
+      <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-sm">
         <LoaderCircle className="h-5 w-5 animate-spin text-primary" />
-        <span className="text-sm text-muted-foreground">{message}</span>
+        <span className="text-sm text-slate-700">{message}</span>
       </div>
     </div>
   );
@@ -136,12 +148,12 @@ function BootstrapErrorState({
   onRetry: () => void;
 }) {
   return (
-    <div className="grid h-full place-items-center">
-      <div className="w-full max-w-xl rounded-[28px] border border-red-200 bg-white px-6 py-6 shadow-[0_24px_80px_rgba(15,23,42,0.06)]">
-        <p className="text-sm font-medium text-red-700">启动初始化失败</p>
-        <p className="mt-3 text-sm leading-6 text-slate-600">{errorMessage}</p>
+    <div className="grid h-full place-items-center bg-transparent px-6">
+      <div className="w-full max-w-xl rounded-xl border border-red-200 bg-red-50/50 px-6 py-6 shadow-sm">
+        <p className="text-sm font-semibold tracking-wide text-red-600">启动初始化失败</p>
+        <p className="mt-3 text-sm leading-6 text-slate-700">{errorMessage}</p>
         <button
-          className="mt-5 inline-flex h-10 items-center rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="mt-5 inline-flex h-9 items-center rounded-md bg-red-600 px-4 text-sm font-medium text-white transition hover:bg-red-500"
           onClick={onRetry}
           type="button"
         >

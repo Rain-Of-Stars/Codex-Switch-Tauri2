@@ -70,7 +70,7 @@ export function SwitchExecutor() {
   const activePreview = selectedProfileId && preview?.profileId === selectedProfileId ? preview : null;
 
   return (
-    <div className="grid h-full min-h-0 gap-4 overflow-y-auto pr-1 xl:grid-cols-[0.95fr_1.05fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
+    <div className="grid h-full min-h-0 gap-4 overflow-hidden xl:grid-cols-[0.95fr_1.05fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
       <Card className="flex min-h-0 flex-col overflow-hidden">
         <CardHeader>
           <CardTitle>预检查与目标写入</CardTitle>
@@ -80,7 +80,7 @@ export function SwitchExecutor() {
         </CardHeader>
         <CardContent className="min-h-0 flex-1 space-y-4 overflow-y-auto">
           {isLoadingPreview ? (
-            <div className="flex items-center gap-2 rounded-2xl border border-border bg-slate-50/80 p-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-md border border-border bg-slate-50/80 p-4 text-sm text-muted-foreground">
               <LoaderCircle className="h-4 w-4 animate-spin" />
               正在生成预检查结果…
             </div>
@@ -94,7 +94,7 @@ export function SwitchExecutor() {
               <div className="space-y-3">
                 {activePreview.targets.map((target) => (
                   <div
-                    className="rounded-2xl border border-border bg-slate-50/80 p-4"
+                    className="rounded-md border border-border bg-slate-50/80 p-4"
                     key={target.targetKey}
                   >
                     <p className="font-medium text-slate-900">{target.displayName}</p>
@@ -109,7 +109,7 @@ export function SwitchExecutor() {
               </div>
 
               {activePreview.warnings.length ? (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
                   {activePreview.warnings.map((warning) => (
                     <p key={warning}>{warning}</p>
                   ))}
@@ -117,7 +117,7 @@ export function SwitchExecutor() {
               ) : null}
             </>
           ) : (
-            <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+            <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
               请选择一个组合后查看切换预览。
             </div>
           )}
@@ -187,7 +187,7 @@ export function SwitchExecutor() {
           <div className="space-y-3">
             {(bootstrap.dashboard.lastSwitchSummary?.steps ?? []).map((step) => (
               <div
-                className="rounded-2xl border border-border bg-white/70 p-4"
+                className="rounded-md border border-border bg-white/70 p-4"
                 key={`${step.name}-${step.detail}`}
               >
                 <div className="flex items-center justify-between gap-2">

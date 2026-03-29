@@ -103,22 +103,22 @@ export function SettingsPanel() {
   }
 
   return (
-    <div className="grid h-full min-h-0 gap-4 overflow-y-auto pr-1 xl:grid-cols-[1fr_0.9fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
+    <div className="grid h-full min-h-0 gap-4 overflow-hidden xl:grid-cols-[1fr_0.9fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
       <Card className="flex min-h-0 flex-col overflow-hidden">
         <CardHeader>
           <CardTitle>系统设置</CardTitle>
         </CardHeader>
         <CardContent className="min-h-0 flex-1 space-y-5 overflow-y-auto">
-          <div className="rounded-2xl border border-border bg-white/80 px-4 py-3 text-sm text-muted-foreground">
+          <div className="rounded-md border border-border bg-white/80 px-4 py-3 text-sm text-muted-foreground">
             {isSaving ? "正在保存设置…" : "设置项变更会自动保存。"}
           </div>
 
-          <div className="grid gap-3 rounded-2xl border border-border bg-slate-50/70 p-4">
+          <div className="grid gap-3 rounded-md border border-border bg-slate-50/70 p-4">
             <Label htmlFor="providerName">APIKEY provider name</Label>
             <Input id="providerName" {...form.register("apiKeyProviderName")} />
           </div>
 
-          <div className="grid gap-3 rounded-2xl border border-border bg-slate-50/70 p-4 sm:grid-cols-2">
+          <div className="grid gap-3 rounded-md border border-border bg-slate-50/70 p-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="distroName">WSL 发行版覆盖</Label>
               <Input id="distroName" {...form.register("wslDistroName")} />
@@ -129,7 +129,7 @@ export function SettingsPanel() {
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-2xl border border-border bg-slate-50/70 p-4 sm:grid-cols-2">
+          <div className="grid gap-3 rounded-md border border-border bg-slate-50/70 p-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="migrationDays">Session migration days</Label>
               <Input
@@ -142,7 +142,7 @@ export function SettingsPanel() {
             </div>
             <div className="space-y-2">
               <Label>默认 WSL 检测</Label>
-              <div className="rounded-xl border border-border bg-white/80 px-3 py-2 text-sm text-muted-foreground">
+              <div className="rounded-md border border-border bg-white/80 px-3 py-2 text-sm text-muted-foreground">
                 {bootstrap.settings.cachedDefaultWsl
                   ? `${bootstrap.settings.cachedDefaultWsl.distroName} / ${bootstrap.settings.cachedDefaultWsl.userName}`
                   : bootstrap.settings.cachedDefaultWslErrorMessage ?? "暂无缓存"}
@@ -150,7 +150,7 @@ export function SettingsPanel() {
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-2xl border border-border bg-slate-50/70 p-4">
+          <div className="grid gap-3 rounded-md border border-border bg-slate-50/70 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-slate-900">Windows 目标</p>
@@ -213,19 +213,19 @@ export function SettingsPanel() {
           <CardTitle>当前状态</CardTitle>
         </CardHeader>
         <CardContent className="min-h-0 flex-1 space-y-3 overflow-y-auto">
-          <div className="rounded-2xl border border-border bg-white/80 p-4">
+          <div className="rounded-md border border-border bg-white/80 p-4">
             <p className="text-sm font-medium text-slate-900">迁移版本</p>
             <p className="mt-2 text-sm text-muted-foreground">
               migrationVersion = {bootstrap.settings.migrationVersion}
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-white/80 p-4">
+          <div className="rounded-md border border-border bg-white/80 p-4">
             <p className="text-sm font-medium text-slate-900">数据访问策略</p>
             <p className="mt-2 text-sm text-muted-foreground">
               应用数据、备份和日志目录均由桌面端受管，不在界面中显示真实路径。
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-white/80 p-4">
+          <div className="rounded-md border border-border bg-white/80 p-4">
             <p className="text-sm font-medium text-slate-900">应用版本</p>
             <p className="mt-2 text-sm text-muted-foreground">
               V{bootstrap.appMeta.version}

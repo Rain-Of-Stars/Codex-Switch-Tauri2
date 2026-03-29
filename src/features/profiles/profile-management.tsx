@@ -190,7 +190,7 @@ export function ProfileManagement() {
   }
 
   return (
-    <div className="grid h-full min-h-0 gap-4 overflow-y-auto pr-1 xl:grid-cols-[0.8fr_1.2fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
+    <div className="grid h-full min-h-0 gap-4 overflow-hidden xl:grid-cols-[0.8fr_1.2fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
       <Card className="flex min-h-0 flex-col overflow-hidden">
         <CardHeader>
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -251,13 +251,13 @@ export function ProfileManagement() {
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+          <div className="min-h-0 flex-1 space-y-3 overflow-hidden">
             {filteredProfiles.map((profile) => (
               <button
-                className={`group w-full min-w-0 rounded-2xl border p-4 text-left transition-all duration-300 ${
+                className={`group w-full min-w-0 rounded-md border p-4 text-left transition-all duration-300 ${
                   profile.id === selectedProfileId
                     ? "border-primary bg-sky-50/60 shadow-sm"
-                    : "border-border bg-white/80 hover:-translate-y-[2px] hover:bg-slate-50 hover:shadow-md"
+                    : "border-border bg-white/80 hover:bg-slate-50 hover:shadow-md"
                 }`}
                 key={profile.id}
                 onClick={() => setSelectedProfileId(profile.id)}
@@ -293,7 +293,7 @@ export function ProfileManagement() {
         <CardContent className="min-h-0 flex-1 space-y-4 overflow-y-auto">
           {selectedProfile ? (
             <>
-              <div className="grid gap-3 rounded-2xl border border-border bg-slate-50/70 p-5">
+              <div className="grid gap-3 rounded-md border border-border bg-slate-50/70 p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="max-w-full truncate" variant="blue">
                     {selectedProfile.name}
@@ -319,7 +319,7 @@ export function ProfileManagement() {
                 ) : null}
               </div>
 
-              <div className="grid gap-3 rounded-2xl border border-border bg-white/80 p-5">
+              <div className="grid gap-3 rounded-md border border-border bg-white/80 p-5">
                 <p className="text-sm text-muted-foreground">
                   auth.json：{selectedProfile.hasStoredAuthJson ? "已保存" : "无"}
                 </p>
@@ -396,7 +396,7 @@ export function ProfileManagement() {
               </div>
             </>
           ) : (
-            <div className="rounded-2xl border border-dashed border-border p-12 text-center text-sm text-muted-foreground">
+            <div className="rounded-md border border-dashed border-border p-12 text-center text-sm text-muted-foreground">
               请选择一个配置，或新建配置。
             </div>
           )}
@@ -421,7 +421,7 @@ export function ProfileManagement() {
               );
             })}
           >
-            <div className="grid gap-4 rounded-2xl border border-border bg-slate-50/70 p-4 sm:grid-cols-2">
+            <div className="grid gap-4 rounded-md border border-border bg-slate-50/70 p-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="profile-name">名称</Label>
                 <Input id="profile-name" {...form.register("name")} />
@@ -473,7 +473,7 @@ export function ProfileManagement() {
             </div>
 
             {providerCategory === "apiKey" ? (
-              <div className="grid gap-4 rounded-2xl border border-border bg-slate-50/70 p-4">
+              <div className="grid gap-4 rounded-md border border-border bg-slate-50/70 p-4">
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <p className="font-medium text-slate-900">导入 config.toml</p>
@@ -519,7 +519,7 @@ export function ProfileManagement() {
               </div>
             ) : null}
 
-            <div className="grid gap-4 rounded-2xl border border-border bg-slate-50/70 p-4">
+            <div className="grid gap-4 rounded-md border border-border bg-slate-50/70 p-4">
               {(providerCategory === "openAI" || authMode === "authJsonFile") ? (
                 <div className="space-y-2">
                   <Label>auth.json 路径</Label>

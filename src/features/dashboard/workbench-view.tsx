@@ -1,14 +1,17 @@
+import { useState } from "react";
 import {
   ArrowLeftRight,
   DatabaseBackup,
   HardDriveDownload,
   ServerCog,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { appApi } from "@/lib/tauri-api/app";
 import { useAppShellStore } from "@/store/app-shell-store";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -23,6 +26,7 @@ import { formatDateTime } from "@/lib/utils";
 
 export function WorkbenchView() {
   const bootstrap = useAppShellStore((state) => state.bootstrap);
+  const [searchQuery, setSearchQuery] = useState("");
 
   if (!bootstrap) {
     return null;
@@ -32,10 +36,15 @@ export function WorkbenchView() {
     (profile) => profile.id === bootstrap.dashboard.activeProfileId,
   );
   const lastSwitch = bootstrap.dashboard.lastSwitchSummary;
+  
+  const filteredProfiles = bootstrap.profiles.filter(
+    (p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           (p.baseUrl && p.baseUrl.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   return (
     <div
-      className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto xl:overflow-hidden"
+      className="flex h-full min-h-0 flex-col gap-4 overflow-hidden xl:overflow-hidden"
       data-testid="workbench-layout"
     >
       <div className="grid shrink-0 gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -72,22 +81,33 @@ export function WorkbenchView() {
 
       <div className="grid gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
         <Card className="flex min-h-[22rem] min-w-0 flex-col overflow-hidden xl:min-h-0">
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle>快速切换</CardTitle>
-            <CardDescription>
+            <CardDescription className="mb-2">
               按当前选中的组合直接执行完整流程：校验、备份、写入与
               sessions/state_5.sqlite迁移。
             </CardDescription>
+            <div className="relative mt-2">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+              <Input
+                type="search"
+                placeholder="搜索配置名称或地址..."
+                className="pl-9 h-9 bg-slate-50 border-slate-200 text-sm focus-visible:ring-primary/30"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </CardHeader>
           <CardContent
-            className="space-y-4 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:pr-2 xl:[scrollbar-gutter:stable]"
+            className="space-y-4 xl:min-h-0 xl:flex-1 overflow-y-auto pr-4 xl:[scrollbar-gutter:stable] custom-scrollbar"
             data-testid="workbench-quick-switch-content"
           >
-            <div className="grid auto-rows-fr gap-3 sm:grid-cols-2">
-              {bootstrap.profiles.slice(0, 4).map((profile) => (
-                <button
-                  className="group flex min-w-0 flex-col rounded-2xl border border-border bg-slate-50/70 p-4 text-left transition-all duration-300 hover:-translate-y-[2px] hover:bg-white hover:shadow-md"
-                  key={profile.id}
+            {filteredProfiles.length > 0 ? (
+              <div className="grid auto-rows-max gap-3 sm:grid-cols-2">
+                {filteredProfiles.map((profile) => (
+                  <button
+                    className="group flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white p-4 text-left transition-all duration-300 hover:border-primary/30 hover:bg-slate-50/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                    key={profile.id}
                   onClick={() => {
                     void appApi
                       .executeSwitch(profile.id)
@@ -105,12 +125,19 @@ export function WorkbenchView() {
                     <p className="min-w-0 flex-1 truncate font-medium text-slate-900" title={profile.name}>
                       {profile.name}
                     </p>
-                    <Badge
-                      className="shrink-0"
-                      variant={profile.providerCategory === "openAI" ? "blue" : "teal"}
-                    >
-                      {profile.providerCategory === "openAI" ? "OpenAI" : "APIKEY"}
-                    </Badge>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {profile.autoDisabled && (
+                        <Badge className="shrink-0" variant="red">
+                          已禁用
+                        </Badge>
+                      )}
+                      <Badge
+                        className="shrink-0"
+                        variant={profile.providerCategory === "openAI" ? "blue" : "teal"}
+                      >
+                        {profile.providerCategory === "openAI" ? "OpenAI" : "APIKEY"}
+                      </Badge>
+                    </div>
                   </div>
                   <p
                     className="mt-2 break-all text-sm leading-6 text-muted-foreground line-clamp-2"
@@ -119,8 +146,13 @@ export function WorkbenchView() {
                     {profile.baseUrl || "使用模板生成 config.toml"}
                   </p>
                 </button>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 text-sm text-slate-500">
+                暂无匹配的配置
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -151,7 +183,7 @@ export function WorkbenchView() {
                 <div className="space-y-3">
                   {lastSwitch.steps.map((step) => (
                     <div
-                      className="rounded-2xl border border-border bg-slate-50/70 p-3"
+                      className="rounded-md border border-border bg-slate-50/70 p-3"
                       key={`${step.name}-${step.detail}`}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -176,7 +208,7 @@ export function WorkbenchView() {
                 </div>
               </>
             ) : (
-              <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                 尚未执行切换。
               </div>
             )}

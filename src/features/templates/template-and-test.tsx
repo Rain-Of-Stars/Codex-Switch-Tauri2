@@ -142,42 +142,52 @@ export function TemplateAndTest() {
   }
 
   return (
-    <div className="grid h-full min-h-0 gap-4 overflow-y-auto pr-1 xl:grid-cols-[1.05fr_0.95fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
-      <Card className="flex min-h-0 flex-col overflow-hidden">
-        <CardHeader>
-          <CardTitle>模板编辑器</CardTitle>
+    <div className="grid h-full min-h-0 gap-4 overflow-hidden xl:grid-cols-[1fr_1.1fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
+      <Card className="flex min-h-0 flex-col overflow-hidden border-slate-200/60 shadow-sm">
+        <CardHeader className="bg-slate-50/50 pb-4">
+          <CardTitle className="text-lg">模板编辑器</CardTitle>
           <CardDescription>
             分别维护 OpenAI / APIKEY 模板，APIKEY 模板支持
             {" {base_url} "}、{" {provider_name} "}、{" {provider_key} "}变量。
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <CardContent className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4">
           <Tabs
             className="flex min-h-0 flex-1 flex-col"
             onValueChange={(value) => setActiveTab(value as TemplateKind)}
             value={activeTab}
           >
-            <TabsList>
-              <TabsTrigger value="openAi">OpenAI 模板</TabsTrigger>
-              <TabsTrigger value="apiKey">APIKEY 模板</TabsTrigger>
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+              <TabsTrigger
+                className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                value="openAi"
+              >
+                OpenAI 模板
+              </TabsTrigger>
+              <TabsTrigger
+                className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                value="apiKey"
+              >
+                APIKEY 模板
+              </TabsTrigger>
             </TabsList>
             <TabsContent className="mt-4 flex min-h-0 flex-1" value="openAi">
               <Textarea
-                className="h-full min-h-[420px] flex-1"
+                className="h-full min-h-[420px] flex-1 font-mono text-sm leading-relaxed border-0 bg-slate-50/50 focus-visible:ring-1 p-4"
                 onChange={(event) => setOpenAiTemplate(event.target.value)}
                 value={openAiTemplate}
               />
             </TabsContent>
             <TabsContent className="mt-4 flex min-h-0 flex-1" value="apiKey">
               <Textarea
-                className="h-full min-h-[420px] flex-1"
+                className="h-full min-h-[420px] flex-1 font-mono text-sm leading-relaxed border-0 bg-slate-50/50 focus-visible:ring-1 p-4"
                 onChange={(event) => setApiKeyTemplate(event.target.value)}
                 value={apiKeyTemplate}
               />
             </TabsContent>
           </Tabs>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-3">
             <Button
               disabled={isSaving}
               onClick={() => {
@@ -196,8 +206,9 @@ export function TemplateAndTest() {
                   .catch((error) => toast.error(error.message ?? "模板保存失败"))
                   .finally(() => setIsSaving(false));
               }}
+              className="min-w-[120px]"
             >
-              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
+              {isSaving ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
               保存模板
             </Button>
             <Button
@@ -216,107 +227,89 @@ export function TemplateAndTest() {
                   .finally(() => setIsSaving(false));
               }}
               variant="outline"
+              className="min-w-[120px]"
             >
-              重置当前模板
+              重置参数
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="flex min-h-0 flex-col overflow-hidden">
-        <CardHeader>
-          <CardTitle>连接测试</CardTitle>
+      <Card className="flex min-h-0 flex-col overflow-hidden border-slate-200/60 shadow-sm bg-slate-50/30">
+        <CardHeader className="bg-slate-50/80 pb-4 border-b">
+          <CardTitle className="text-lg flex items-center justify-between">
+            <span>连接测试</span>
+            <span className="text-sm font-normal text-muted-foreground">已选 {selectedCount} / {apiKeyProfiles.length}</span>
+          </CardTitle>
           <CardDescription>
-            现在支持批量执行 APIKEY 测试，可临时覆盖测试模型，并在失败后自动标记禁用。
+            批量执行 APIKEY 连通性测试。支持自定义测试模型，自动封禁失效节点。      
           </CardDescription>
         </CardHeader>
-        <CardContent className="min-h-0 flex-1 space-y-4 overflow-y-auto">
-          <div className="grid gap-3 rounded-3xl border border-border bg-slate-50/80 p-4 md:grid-cols-[1fr_auto] md:items-end">
-            <div className="space-y-2">
-              <Label htmlFor="override-model">测试模型覆盖</Label>
-              <Input
-                id="override-model"
-                onChange={(event) => setOverrideModel(event.target.value)}
-                placeholder="留空时使用组合内测试模型或默认 gpt-5.4-mini"
-                value={overrideModel}
-              />
+        <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b bg-white">
+            <div className="flex flex-wrap gap-2 items-center">
+              <Select
+                onValueChange={(value) => setProfileFilter(value as ProfileStatusFilter)}
+                value={profileFilter}
+              >
+                <SelectTrigger className="w-[140px] h-8 text-xs bg-slate-50">
+                  <SelectValue placeholder="筛选状态" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全部组合 ({apiKeyProfiles.length})</SelectItem>
+                  <SelectItem value="enabled">仅看启用 ({enabledProfiles.length})</SelectItem>
+                  <SelectItem value="disabled">仅看禁用 ({disabledProfiles.length})</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={selectAllEnabledProfiles} type="button" variant="outline" size="sm" className="h-8 text-xs">
+                <CheckCheck className="mr-1.5 h-3.5 w-3.5" />
+                全选可用
+              </Button>
+              <Button onClick={clearSelection} type="button" variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground">
+                清空
+              </Button>
             </div>
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 md:min-w-[220px]">
-              <div>
-                <p className="text-sm font-medium text-slate-900">失败自动禁用</p>
-                <p className="text-xs text-muted-foreground">失败后会标记组合，避免后续批量重复请求。</p>
-              </div>
-              <Switch checked={disableOnFailure} onCheckedChange={setDisableOnFailure} />
-            </div>
+            {restorableProfiles.length > 0 ? (
+              <Button
+                disabled={isRestoring}
+                onClick={restoreDisabledProfiles}
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs text-brand-600 border-brand-200 bg-brand-50 hover:bg-brand-100"
+              >
+                {isRestoring ? <LoaderCircle className="mr-1.5 h-3 w-3 animate-spin" /> : null}
+                恢复 {restorableProfiles.length} 个禁用项
+              </Button>
+            ) : null}
           </div>
 
-          <div className="grid gap-3 rounded-3xl border border-border bg-white/90 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-slate-900">批量选择 APIKEY 组合</p>
-                <p className="text-sm text-muted-foreground">
-                  已选择 {selectedCount} 个，可用 {enabledProfiles.length} 个，禁用 {disabledProfiles.length} 个。
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Select
-                  onValueChange={(value) => setProfileFilter(value as ProfileStatusFilter)}
-                  value={profileFilter}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50">
+            {visibleProfiles.map((profile) => {
+              const latestResult = resultByProfileId.get(profile.id);
+              const isChecked = selectedProfileIds.includes(profile.id);
+              return (
+                <label
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all duration-200 ${
+                    profile.autoDisabled
+                      ? "border-rose-200/70 bg-rose-50/30 opacity-70 grayscale-[0.3]"
+                      : isChecked
+                        ? "border-sky-300 bg-sky-50/40 shadow-sm ring-1 ring-sky-100"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                  }`}
+                  key={profile.id}
                 >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="筛选状态" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">全部组合</SelectItem>
-                    <SelectItem value="enabled">仅看启用</SelectItem>
-                    <SelectItem value="disabled">仅看禁用</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button onClick={selectAllEnabledProfiles} type="button" variant="outline">
-                  <CheckCheck className="h-4 w-4" />
-                  全选启用项
-                </Button>
-                <Button onClick={clearSelection} type="button" variant="outline">
-                  清空选择
-                </Button>
-                {restorableProfiles.length > 0 ? (
-                  <Button
-                    disabled={isRestoring}
-                    onClick={restoreDisabledProfiles}
-                    type="button"
-                    variant="outline"
-                  >
-                    {isRestoring ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-                    批量恢复禁用项
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="max-h-[260px] space-y-3 overflow-y-auto pr-1">
-              {visibleProfiles.map((profile) => {
-                const latestResult = resultByProfileId.get(profile.id);
-                const isChecked = selectedProfileIds.includes(profile.id);
-                return (
-                  <label
-                    className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all ${
-                      profile.autoDisabled
-                        ? "border-rose-200 bg-rose-50/70"
-                        : isChecked
-                          ? "border-primary bg-sky-50/60"
-                          : "border-border bg-slate-50/60 hover:border-slate-300"
-                    }`}
-                    key={profile.id}
-                  >
-                    <Checkbox
-                      checked={isChecked}
-                      disabled={profile.autoDisabled}
-                      onCheckedChange={(checked) => toggleProfile(profile.id, checked === true)}
-                    />
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium text-slate-900">{profile.name}</span>
-                        {profile.autoDisabled ? <Badge variant="red">已禁用</Badge> : null}
+                  <Checkbox
+                    checked={isChecked}
+                    disabled={profile.autoDisabled}
+                    onCheckedChange={(checked) => toggleProfile(profile.id, checked === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="min-w-0 flex-1 space-y-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-semibold text-slate-900 text-sm tracking-tight">{profile.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        {profile.autoDisabled ? <Badge variant="red" className="text-[10px] px-1.5 py-0">已禁用</Badge> : null}
                         {latestResult ? (
                           <Badge
                             variant={
@@ -326,126 +319,105 @@ export function TemplateAndTest() {
                                   ? "amber"
                                   : "red"
                             }
+                            className="text-[10px] px-1.5 py-0"
                           >
-                            {latestResult.status}
+                            {latestResult.status === "success" ? "成功" : latestResult.status === "warning" ? "警告" : "失败"}
                           </Badge>
                         ) : null}
                       </div>
-                      <p className="line-clamp-2 text-sm text-muted-foreground">
-                        {profile.baseUrl || "使用导入 config.toml 提供 Base URL"}
-                      </p>
-                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                        <span>测试模型：{profile.testModel || "默认 gpt-5.4-mini"}</span>
-                        {profile.autoDisabledAtUtc ? (
-                          <span>禁用时间：{formatDateTime(profile.autoDisabledAtUtc)}</span>
-                        ) : null}
-                      </div>
-                      {profile.autoDisabledReason ? (
-                        <p className="text-xs text-rose-700">{profile.autoDisabledReason}</p>
-                      ) : null}
                     </div>
-                  </label>
-                );
-              })}
-              {visibleProfiles.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                  当前筛选条件下没有可显示的组合。
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button
-              disabled={selectedCount === 0 || isTesting}
-              onClick={() => {
-                if (selectedCount === 0) {
-                  return;
-                }
-                setIsTesting(true);
-                void appApi
-                  .batchTestProfileConnections({
-                    disableOnFailure,
-                    overrideModel: overrideModel.trim() || null,
-                    profileIds: selectedProfileIds,
-                  })
-                  .then((response) => {
-                    setBootstrap(response.bootstrap);
-                    setTestResults(response.results);
-                    const disabledCount = response.results.filter((item) => item.autoDisabled).length;
-                    if (disabledCount > 0 && disableOnFailure) {
-                      toast.warning(`批量测试完成，已有 ${disabledCount} 个组合被自动禁用`);
-                    } else {
-                      toast.success("批量连接测试已完成");
-                    }
-                  })
-                  .catch((error) => {
-                    toast.error(error.message ?? "批量连接测试失败");
-                  })
-                  .finally(() => setIsTesting(false));
-              }}
-              type="button"
-            >
-              {isTesting ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <PlugZap className="h-4 w-4" />
-              )}
-              执行批量连接测试
-            </Button>
-
-            {disabledProfiles.length > 0 ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
-                <ShieldBan className="h-4 w-4" />
-                已禁用组合不会加入本次批量测试，可在配置管理中恢复启用。
+                    <div className="space-y-1">
+                      <p className="truncate text-xs text-slate-500 font-mono" title={profile.baseUrl || "使用原生配置"}>
+                        {profile.baseUrl || "默认配置路径 (通过模板映射)"}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        使用模型：<span className="text-slate-600">{profile.testModel || "gpt-5.4-mini (默认)"}</span>
+                      </p>
+                    </div>
+                    {(profile.autoDisabledReason || latestResult?.message) ? (
+                      <div className={`mt-2 rounded p-2 text-xs border ${profile.autoDisabled ? "bg-rose-100/50 border-rose-100 text-rose-700" : "bg-slate-100/50 border-slate-100 text-slate-600"}`}>
+                        <p className="line-clamp-2" title={latestResult?.message || profile.autoDisabledReason || ""}>
+                          {latestResult?.message || profile.autoDisabledReason}
+                        </p>
+                        {profile.autoDisabledAtUtc && (
+                          <p className="mt-1 text-[10px] opacity-80">禁用时间: {formatDateTime(profile.autoDisabledAtUtc)}</p>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </label>
+              );
+            })}
+            {visibleProfiles.length === 0 ? (
+              <div className="flex h-32 flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 bg-white/50 text-slate-400">
+                <ShieldBan className="mb-2 h-8 w-8 opacity-20" />
+                <p className="text-sm">未找到符合条件的组合记录</p>
               </div>
             ) : null}
           </div>
 
-          {testResults.length > 0 ? (
-            <div className="space-y-3 rounded-3xl border border-border bg-slate-50/80 p-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="green">成功 {resultSummary.success}</Badge>
-                <Badge variant="amber">警告 {resultSummary.warning}</Badge>
-                <Badge variant="red">失败 {resultSummary.failure}</Badge>
-                {resultSummary.autoDisabled > 0 ? (
-                  <Badge variant="red">自动禁用 {resultSummary.autoDisabled}</Badge>
-                ) : null}
+          <div className="border-t bg-white p-4">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              <div className="flex flex-1 items-center gap-4">
+                <div className="w-full max-w-[240px]">
+                  <Label htmlFor="override-model" className="sr-only">测试模型覆盖</Label>
+                  <Input
+                    id="override-model"
+                    className="h-9 text-sm"
+                    onChange={(event) => setOverrideModel(event.target.value)}
+                    placeholder="默认 gpt-5.4-mini, 另可覆写"
+                    value={overrideModel}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch id="auto-disable" checked={disableOnFailure} onCheckedChange={setDisableOnFailure} />
+                  <Label htmlFor="auto-disable" className="text-sm font-medium cursor-pointer">
+                    失败自动禁用
+                  </Label>
+                </div>
               </div>
 
-              <div className="space-y-3">
-                {testResults.map((result) => (
-                  <div className="rounded-2xl border border-border bg-white/90 p-4" key={result.profileId}>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium text-slate-900">{result.profileName}</p>
-                      <Badge
-                        variant={
-                          result.status === "success"
-                            ? "green"
-                            : result.status === "warning"
-                              ? "amber"
-                              : "red"
-                        }
-                      >
-                        {result.status}
-                      </Badge>
-                      <Badge variant="blue">{result.model}</Badge>
-                      {result.autoDisabled ? <Badge variant="red">已自动禁用</Badge> : null}
-                    </div>
-                    <p className="mt-3 text-sm text-slate-900">{result.message}</p>
-                    <p className="mt-3 break-all text-sm text-muted-foreground">
-                      Endpoint：{result.endpoint}
-                    </p>
-                  </div>
-                ))}
+              <Button
+                size="lg"
+                className="w-full xl:w-auto font-medium"
+                disabled={selectedCount === 0 || isTesting}
+                onClick={() => {
+                  if (selectedCount === 0) return;
+                  setIsTesting(true);
+                  void appApi
+                    .batchTestProfileConnections({
+                      disableOnFailure,
+                      overrideModel: overrideModel.trim() || null,
+                      profileIds: selectedProfileIds,
+                    })
+                    .then((response) => {
+                      setBootstrap(response.bootstrap);
+                      setTestResults(response.results);
+                      const disabledCount = response.results.filter((item) => item.autoDisabled).length;
+                      if (disabledCount > 0 && disableOnFailure) {
+                        toast.warning(`已完成，${disabledCount} 个失效节点已被禁用`);
+                      } else {
+                        toast.success("测试通过，已全部完成");
+                      }
+                    })
+                    .catch((error) => toast.error(error.message ?? "测试执行失败"))
+                    .finally(() => setIsTesting(false));
+                }}
+              >
+                {isTesting ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <PlugZap className="mr-2 h-4 w-4" />}
+                执行批量测试 ({selectedCount})
+              </Button>
+            </div>
+            
+            {testResults.length > 0 && (
+              <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground border-t pt-3">
+                <span>测试结果摘要：</span>
+                <span className="text-green-600 font-medium">成功 {resultSummary.success}</span>
+                <span className="text-amber-500 font-medium">警告 {resultSummary.warning}</span>
+                <span className="text-rose-500 font-medium">失败 {resultSummary.failure}</span>
               </div>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-              <TestTube2 className="mx-auto mb-3 h-5 w-5 text-muted-foreground" />
-              选择启用的 APIKEY 组合后即可批量测试；如需统一换模型，可在上方输入覆盖值。
-            </div>
-          )}
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

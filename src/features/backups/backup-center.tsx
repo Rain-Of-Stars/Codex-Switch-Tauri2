@@ -22,7 +22,7 @@ export function BackupCenter() {
   }
 
   return (
-    <div className="grid h-full min-h-0 gap-4 overflow-y-auto pr-1 xl:grid-cols-[0.72fr_1.28fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
+    <div className="grid h-full min-h-0 gap-4 overflow-hidden xl:grid-cols-[0.72fr_1.28fr] xl:grid-rows-[minmax(0,1fr)] xl:overflow-hidden">
       <Card className="flex min-h-0 flex-col overflow-hidden">
         <CardHeader>
           <CardTitle>恢复最近一次</CardTitle>
@@ -35,7 +35,7 @@ export function BackupCenter() {
           <div className="space-y-3">
             {bootstrap.dashboard.backupOverview.map((item) => (
               <div
-                className="rounded-2xl border border-border bg-slate-50/70 p-4"
+                className="rounded-md border border-border bg-slate-50/70 p-4"
                 key={item.targetKey}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -83,7 +83,7 @@ export function BackupCenter() {
           {bootstrap.backups.length ? (
             bootstrap.backups.map((item) => (
               <div
-                className="rounded-2xl border border-border bg-white/80 p-4"
+                className="rounded-md border border-border bg-white/80 p-4"
                 key={`${item.targetKey}-${item.directoryName}`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -117,7 +117,7 @@ export function BackupCenter() {
               </div>
             ))
           ) : (
-            <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+            <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
               暂无备份。
             </div>
           )}
